@@ -9,11 +9,11 @@ CREATE TABLE department (
     name VARCHAR(30) NOT NULL 
 );
 
-CREATE TABLE position (
+CREATE TABLE role (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(30),
     salary DECIMAL,
-    department_id INTEGER,  
+    role_id INTEGER,  
     CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES department(id) 
     ON DELETE 
     SET NULL
@@ -25,5 +25,5 @@ CREATE TABLE employee (
     last_name VARCHAR(30),
     position_id INTEGER, 
     manager_id INTEGER,
-    CONSTRAINT fk_position FOREIGN KEY (position_id) REFERENCES position(id) ON DELETE SET NULL
+    CONSTRAINT fk_position FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE SET NULL
 );
