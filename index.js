@@ -96,4 +96,22 @@ function viewRoles() {
   })
 }
 
+function addDepartment() {
+  inquirer.prompt(
+    {
+      name: "newDept",
+      type: "text",
+      message: "What is the name of the new department?"
+    }
+  )
+    .then(answer => {
+      var sql = "INSERT INTO department(name) VALUES (?);"
+      var values = answer.newDept;
+      connection.query(sql, values, function (err, result) {
+        if (err) throw err;
+        console.log(answer.newDept + " has been successfully added to the list of departments.")
+      })
+    })
+
+}
 initialize();
