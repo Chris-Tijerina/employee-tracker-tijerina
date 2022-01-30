@@ -56,7 +56,7 @@ function mainMenu() {
           break;
 
         case "Add An Employee":
-          addRole();
+          addEmployee();
           break;
 
         case "Update An Employee":
@@ -100,7 +100,7 @@ function addDepartment() {
   inquirer.prompt(
     {
       name: "newDept",
-      type: "text",
+      type: "input",
       message: "What is the name of the new department?"
     }
   )
@@ -113,5 +113,51 @@ function addDepartment() {
       })
     })
 
+}
+
+function addRole() {
+  var choices = [];
+  connection.query("SELECT * FROM department", function (err, results) {
+    if (err) throw err;
+    for (i = 0; i < results.length; i++) {
+      var list = results[i].name;
+      choices.push(list);
+    }
+  });
+  inquirer.prompt([
+    {
+      name: "roleName",
+      type: "text",
+      message: "What is the title of the new role?"
+    },
+    {
+      name: "roleSalary",
+      type: "number",
+      message: "What is the salary of the new role?"
+    },
+    {
+      name: "roleDept",
+      type: "list",
+      message: "Which department would you like to add this role to?",
+      choices: choices
+    }
+  ])
+    .then(answer => {
+      var userChoice = "";
+      for (i = 0; i < answer.length; i++) {
+        if (results[i].name === answer.department_id) {
+          userChoice = answer[i];
+        }
+      };
+      var sql = "INSERT INTO role(title, salary, department_id) VALUES (?, ?, ?);";
+      var values = [answer.roleName, answer.roleSalary, userChoice.id]
+      connection.query(sql, values, function (err, result) {
+        if (err) throw err;
+        console.log(answer.roleName + " has been added to the list of roles!")
+      })
+    })
+    .then(() => {
+      mainMenu();
+    })
 }
 initialize();
