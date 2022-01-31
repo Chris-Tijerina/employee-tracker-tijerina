@@ -11,7 +11,7 @@ const connection = mysql.createConnection({
   database: 'employees'
 });
 
-
+// initialize the program with a title screen
 function initialize() {
   console.log(" ______                 _                         _______             _             ");
   console.log("|  ____|               | |                       |__   __|           | |            ");
@@ -24,6 +24,7 @@ function initialize() {
   mainMenu();
 }
 
+// list of questions to be asked after all things that are done
 function mainMenu() {
   inquirer.prompt(
     {
@@ -33,6 +34,7 @@ function mainMenu() {
       choices: ["View All Departments", "View All Roles", "View All Employees", "Add A Department", "Add A Role", "Add An Employee", "Update An Employee", "Exit"]
     }
   )
+  // switch case to check what the person wants to do and run the applicable function
     .then(function (answer) {
       switch (answer.mainMenu) {
         case "View All Departments":
@@ -76,7 +78,7 @@ function mainMenu() {
     })
 }
 
-
+// display a table based on what has been chosen with console.table
 function viewDepartments() {
   connection.query("SELECT * FROM department", function (err, results) {
     console.table(results);
@@ -98,6 +100,7 @@ function viewRoles() {
   })
 }
 
+// use inquirer and sql queries to add to tables and change values
 function addDepartment() {
   inquirer.prompt(
     {
@@ -114,8 +117,10 @@ function addDepartment() {
         console.log("---------------------------------------------------------");
         console.log(answer.newDept + " has been successfully added to the list of departments.");
         console.log("---------------------------------------------------------");
+        mainMenu();
       })
     })
+
 
 }
 
@@ -126,7 +131,6 @@ function addRole() {
     for (i = 0; i < results.length; i++) {
       var list = results[i].name;
       choices.push(list);
-      //console.log(choices);
     }
   });
   inquirer.prompt([
@@ -236,7 +240,6 @@ function updateEmployee() {
     for (i = 0; i < results.length; i++) {
       var empList = results[i].first_name + " " + results[i].last_name;
       empChoices.push(empList);
-      // console.log(empChoices);
     }
   });
   var roleChoices = [];
@@ -290,5 +293,5 @@ function updateEmployee() {
     })
 }
 
-
+// call the initialize function
 initialize();

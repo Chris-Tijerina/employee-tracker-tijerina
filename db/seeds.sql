@@ -24,4 +24,10 @@ VALUES
     ('Mia', 'Fey', 1, NULL),
     ('Phoenix', 'Wright', 2, 1),
     ('Lana', 'Skye', 3, NULL),
-    ('Dick', 'Gumshoe', 4, 3);
+    ('Dick', 'Gumshoe', 4, 3),
+    ('Jake', 'Marshall', 5, 3),
+    ('Lotta', 'Hart', 6, NULL),
+    ('Larry', 'Butz', 7, 6),
+    ('Maggie', 'Byrd', 8, 6),
+    ('Maya', 'Fey', 9, NULL), 
+    ('Ema', 'Skye', 10, 9);
