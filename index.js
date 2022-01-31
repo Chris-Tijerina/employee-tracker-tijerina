@@ -64,7 +64,9 @@ function mainMenu() {
           break;
 
         case "Exit":
-          console.log("Goodbye!");
+          console.log("---------------------------------------------------------");
+          console.log("Thank you for using the Employee Tracker. Goodbye!");
+          console.log("---------------------------------------------------------");
           process.exit();
       }
 
@@ -109,7 +111,9 @@ function addDepartment() {
       var values = answer.newDept;
       connection.query(sql, values, function (err, result) {
         if (err) throw err;
-        console.log(answer.newDept + " has been successfully added to the list of departments.")
+        console.log("---------------------------------------------------------");
+        console.log(answer.newDept + " has been successfully added to the list of departments.");
+        console.log("---------------------------------------------------------");
       })
     })
 
@@ -208,21 +212,82 @@ function addEmployee() {
       choices: managerChoices
     }
   ])
-  .then(answer => {
-    console.log(answer)
-    var sql = "INSERT INTO employee (first_name, last_name, role_id, manager_id) SELECT ?, ?, role.id, employee.id FROM role, employee WHERE role.title = ? AND CONCAT(employee.first_name, ' ', employee.last_name) = ?;";
-    var values = [answer.employeeFirst, answer.employeeLast, answer.employeeRole, answer.employeeManager]
-    connection.query(sql, values, function (err, result) {
-      if (err) {
-        throw err;
-      } else {
-        console.log("---------------------------------------------------------");
-        console.log(answer.employeeFirst + "" + answer.employeeLast + " has been added to the list of employees!");
-        console.log("---------------------------------------------------------");
+    .then(answer => {
+      console.log(answer)
+      var sql = "INSERT INTO employee (first_name, last_name, role_id, manager_id) SELECT ?, ?, role.id, employee.id FROM role, employee WHERE role.title = ? AND CONCAT(employee.first_name, ' ', employee.last_name) = ?;";
+      var values = [answer.employeeFirst, answer.employeeLast, answer.employeeRole, answer.employeeManager]
+      connection.query(sql, values, function (err, result) {
+        if (err) {
+          throw err;
+        } else {
+          console.log("---------------------------------------------------------");
+          console.log(answer.employeeFirst + " " + answer.employeeLast + " has been added to the list of employees!");
+          console.log("---------------------------------------------------------");
+          mainMenu();
+        }
+      });
+    })
+}
+
+function updateEmployee() {
+  var empChoices = [];
+  connection.query("SELECT * FROM employee", function (err, results) {
+    if (err) throw err;
+    for (i = 0; i < results.length; i++) {
+      var empList = results[i].first_name + " " + results[i].last_name;
+      empChoices.push(empList);
+      // console.log(empChoices);
+    }
+  });
+  var roleChoices = [];
+  connection.query("SELECT * FROM role", function (err, results) {
+    if (err) throw err;
+    for (i = 0; i < results.length; i++) {
+      var roleList = results[i].title;
+      roleChoices.push(roleList);
+    }
+  });
+  inquirer.prompt(
+    {
+      name: "confirmChange",
+      type: "confirm",
+      message: "Do you want to update a employee's role?"
+    })
+    .then(answer => {
+      if (answer.confirmChange == false) {
         mainMenu();
+      } else {
+        inquirer.prompt([
+          {
+            name: "employeeChoice",
+            type: "list",
+            message: "Which employee's role do you want to update?",
+            choices: empChoices
+          },
+          {
+            name: "roleChoice",
+            type: "list",
+            message: "what is their new role?",
+            choices: roleChoices
+          }
+        ])
+          .then(answer => {
+            console.log(answer);
+            var sql = "UPDATE employee SET role_id = (SELECT role.id FROM role WHERE title = ?) WHERE CONCAT(employee.first_name, ' ', employee.last_name) = ?;";
+            var values = [answer.roleChoice, answer.employeeChoice]
+            connection.query(sql, values, function (err, result) {
+              if (err) {
+                throw err;
+              } else {
+                console.log("---------------------------------------------------------");
+                console.log(answer.employeeChoice + "'s role has been updated!");
+                console.log("---------------------------------------------------------");
+                mainMenu();
+              }
+            });
+          });
       }
-    });
-  })
+    })
 }
 
 
