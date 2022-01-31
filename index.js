@@ -159,5 +159,71 @@ function addRole() {
     })
 }
 
+function addEmployee() {
+  var deptChoices = [];
+  connection.query("SELECT * FROM department", function (err, results) {
+    if (err) throw err;
+    for (i = 0; i < results.length; i++) {
+      var deptList = results[i].name;
+      deptChoices.push(deptList);
+    }
+  });
+  var roleChoices = [];
+  connection.query("SELECT * FROM role", function (err, results) {
+    if (err) throw err;
+    for (i = 0; i < results.length; i++) {
+      var roleList = results[i].title;
+      roleChoices.push(roleList);
+    }
+  });
+  var managerChoices = [];
+  connection.query("SELECT * FROM employee", function (err, results) {
+    if (err) throw err;
+    for (i = 0; i < results.length; i++) {
+      var managerList = results[i].first_name + " " + results[i].last_name;
+      managerChoices.push(managerList);
+    }
+  });
+  inquirer.prompt([
+    {
+      name: "employeeFirst",
+      type: "text",
+      message: "What is the first name of the new employee?"
+    },
+    {
+      name: "employeeLast",
+      type: "text",
+      message: "What is the last name of the new employee?"
+    },
+    {
+      name: "employeeRole",
+      type: "list",
+      message: "What role will they have?",
+      choices: roleChoices
+    },
+    {
+      name: "employeeManager",
+      type: "list",
+      message: "Who is their manager?",
+      choices: managerChoices
+    }
+  ])
+  .then(answer => {
+    console.log(answer)
+    var sql = "INSERT INTO employee (first_name, last_name, role_id, manager_id) SELECT ?, ?, role.id, employee.id FROM role, employee WHERE role.title = ? AND CONCAT(employee.first_name, ' ', employee.last_name) = ?;";
+    var values = [answer.employeeFirst, answer.employeeLast, answer.employeeRole, answer.employeeManager]
+    connection.query(sql, values, function (err, result) {
+      if (err) {
+        throw err;
+      } else {
+        console.log("---------------------------------------------------------");
+        console.log(answer.employeeFirst + "" + answer.employeeLast + " has been added to the list of employees!");
+        console.log("---------------------------------------------------------");
+        mainMenu();
+      }
+    });
+  })
+}
+
 
 initialize();
