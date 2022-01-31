@@ -1,4 +1,6 @@
 # Employee Tracker
+![Tracker title](https://user-images.githubusercontent.com/90019024/151741150-2dce18cb-c95e-41f0-94d7-a692af03dc27.JPG)
+
 GitHub Link: https://github.com/Chris-Tijerina/employee-tracker-tijerina 
 
 Walkthrough Video: https://watch.screencastify.com/v/8Vf0eyKOE0UsFa97lYc2
