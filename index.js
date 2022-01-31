@@ -83,7 +83,7 @@ function viewDepartments() {
 }
 
 function viewEmployees() {
-  connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title AS role, role.salary, department.name, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager ON manager.id = employee.manager_id;", function (err, results) {
+  connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title AS role, role.salary, department.name AS department, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager ON manager.id = employee.manager_id;", function (err, results) {
     console.table(results);
     mainMenu();
   })
@@ -122,6 +122,7 @@ function addRole() {
     for (i = 0; i < results.length; i++) {
       var list = results[i].name;
       choices.push(list);
+      //console.log(choices);
     }
   });
   inquirer.prompt([
@@ -143,21 +144,20 @@ function addRole() {
     }
   ])
     .then(answer => {
-      var userChoice = "";
-      for (i = 0; i < answer.length; i++) {
-        if (results[i].name === answer.department_id) {
-          userChoice = answer[i];
-        }
-      };
-      var sql = "INSERT INTO role(title, salary, department_id) VALUES (?, ?, ?);";
-      var values = [answer.roleName, answer.roleSalary, userChoice.id]
+      var sql = "INSERT INTO role (title, salary, department_id) SELECT ?, ?, department.id FROM department WHERE department.name = ?;";
+      var values = [answer.roleName, answer.roleSalary, answer.roleDept]
       connection.query(sql, values, function (err, result) {
-        if (err) throw err;
-        console.log(answer.roleName + " has been added to the list of roles!")
-      })
-    })
-    .then(() => {
-      mainMenu();
+        if (err) {
+          throw err;
+        } else {
+          console.log("---------------------------------------------------------");
+          console.log(answer.roleName + " has been added to the list of roles!");
+          console.log("---------------------------------------------------------");
+          mainMenu();
+        }
+      });
     })
 }
+
+
 initialize();
